@@ -22,7 +22,8 @@
       }
     },
     "spnTenantId": {
-      "type": "string",
+      "type": "string",    
+    "defaultValue": "[subscription().tenantId]",
       "metadata": {
         "description": "Azure AD tenant id for your service principal"
       }
