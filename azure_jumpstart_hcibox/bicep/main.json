@@ -15,6 +15,9 @@
         "description": "Azure service principal client id"
       }
     },
+       "DeploymentID": {
+      "type": "string"
+    },
     "spnClientSecret": {
       "type": "secureString",
       "metadata": {
@@ -1039,5 +1042,21 @@
         "[resourceId('Microsoft.Resources/deployments', 'stagingStorageAccountDeployment')]"
       ]
     }
-  ]
+  ],
+   "outputs":{
+     "ARCHost VM DNS": {
+      "value": "[concat('archost',parameters('DeploymentID'), '.', resourceGroup().location, '.cloudapp.azure.com')]",
+      "type": "string"
+    },
+    "ARCHost VM username": {
+      "value": "arcdemo",
+      "type": "string"
+    },
+    "ARCHost VM password": {
+      "value": "ArcPassword123!!",
+      "type": "string"
+    }
+
+  }
+
 }
