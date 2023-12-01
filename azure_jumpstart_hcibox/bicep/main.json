@@ -15,9 +15,6 @@
         "description": "Azure service principal client id"
       }
     },
-       "DeploymentID": {
-      "type": "string"
-    },
     "spnClientSecret": {
       "type": "secureString",
       "metadata": {
@@ -105,6 +102,10 @@
       "metadata": {
         "description": "Location to deploy resources"
       }
+    },
+    
+     "DeploymentID": {
+      "type": "string"
     }
   },
   "variables": {
@@ -677,6 +678,10 @@
           "natDNS": {
             "value": "[parameters('natDNS')]"
           },
+          
+           "DeploymentID": {
+            "value": "[parameters('DeploymentID')]"
+          },
           "location": {
             "value": "[parameters('location')]"
           }
@@ -810,11 +815,16 @@
               "metadata": {
                 "description": "Public DNS to use for the domain"
               }
-            }
+            },
+                    "DeploymentID": {
+      "type": "string"
+    }
           },
           "variables": {
             "encodedPassword": "[base64(parameters('windowsAdminPassword'))]",
             "bastionName": "HCIBox-Bastion",
+              "prefix": "archost",
+             "publicIpAddressDNSName": "[concat(variables('prefix'), parameters('DeploymentID'))]",
             "publicIpAddressName": "[if(equals(parameters('deployBastion'), false()), format('{0}-PIP', parameters('vmName')), format('{0}-PIP', variables('bastionName')))]",
             "networkInterfaceName": "[format('{0}-NIC', parameters('vmName'))]",
             "osDiskType": "Premium_LRS",
@@ -855,7 +865,10 @@
               "properties": {
                 "publicIPAllocationMethod": "Static",
                 "publicIPAddressVersion": "IPv4",
-                "idleTimeoutInMinutes": 4
+                "idleTimeoutInMinutes": 4,
+                        "dnsSettings": {
+          "domainNameLabel": "[variables('publicIpAddressDNSName')]"
+        }
               },
               "sku": {
                 "name": "Basic"
@@ -1030,6 +1043,10 @@
               "type": "string",
               "value": "[if(equals(parameters('deployBastion'), false()), concat(reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName')), '2021-03-01').ipAddress), '')]"
             },
+              "ARCHost VM DNS": {
+      "value": "[concat('archost',parameters('DeploymentID'), '.', resourceGroup().location, '.cloudapp.azure.com')]",
+      "type": "string"
+    },
             "base64Output": {
               "type": "string",
               "value": "[variables('encodedPassword')]"
